@@ -26,6 +26,7 @@ from gi.repository import Gdk
 
 
 DRAG_TARGETS = [Gtk.TargetEntry.new("BALL", 0, 0)]
+IGNORE_TARGETS = [Gtk.TargetEntry.new("NONE", 0, 0)]
 DRAG_ACTION = Gdk.DragAction.MOVE
 
 

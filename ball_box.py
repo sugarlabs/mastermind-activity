@@ -24,6 +24,7 @@ from utils import get_ball_image
 
 from constants import DRAG_ACTION
 from constants import DRAG_TARGETS
+from constants import IGNORE_TARGETS
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -51,8 +52,8 @@ class BallBox(Gtk.EventBox):
 
         return ball
 
-    def __drag_data_received(self, widget, drag_context, data, info, time):
-        print data
+    def __drag_data_received(self, widget, *args):
+        print args
         # data.set_text(self.word, -1)
 
     def set_ball(self, ballid):
@@ -72,19 +73,20 @@ class BallBox(Gtk.EventBox):
             else:
                 self.drag_source_set_icon_pixbuf(make_ball_pixbuf(-1, False))
 
-        else:  # TODO: how I remove this?
-            pass
+        else:
+            self.drag_source_set(Gdk.ModifierType.BUTTON2_MASK, IGNORE_TARGETS, DRAG_ACTION)
 
     def set_dest_drag(self, dest):
         if dest == self.drag_dest:
             return
 
+        self.drag_dest = dest
         if self.drag_dest:
             self.drag_dest_set(Gtk.DestDefaults.ALL, DRAG_TARGETS, DRAG_ACTION)
             self.connect("drag-data-received", self.__drag_data_received)
 
-        else:  # TODO: How I remove this?
-            pass
+        else:
+            self.drag_dest_set(Gtk.DestDefaults.ALL, IGNORE_TARGETS, DRAG_ACTION)
 
     def make_image(self):
         if self.image is not None:

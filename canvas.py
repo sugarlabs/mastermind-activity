@@ -33,44 +33,49 @@ class GridBalls(Gtk.Grid):
     def __init__(self):
         Gtk.Grid.__init__(self)
 
-        self.balls = []
+        self.balls = {}
+        self.level = None
 
         self.reset()
         self.show_all()
 
     def clear(self):
-        while self.balls != []:
-            ball = self.balls[0]
-            self.remove(ball)
-            self.balls.remove(ball)
+        del self.balls
+        self.balls = {}
+        self.level = 0
 
-            del ball
+        for x in range(0, 4):
+            self.balls[x] = [None] * 10
 
     def reset(self):
         self.clear()
 
-        self.balls = [[None] * 10] * 4
-
         x = -1
-        y = 9
+        y = 0
 
         for i in range(0, 40):
             x += 1
 
             if x >= 4:
                 x = 0
-                y -= 1
+                y += 1
 
             box = BallBox()
-            box.set_dest_drag(True)
             self.attach(box, x, y, 1, 1)
 
-            self.balls[x][y] = box
+            self.balls[x][9 - y] = box
 
+        self.set_drag_level()
         self.show_all()
 
     def set_ball(self, x, y, ballid):
         self.balls[x][y].set_ball(ballid)
+
+    def set_drag_level(self):
+        for x in range(0, 4):
+            for y in range(0, 9):
+                ball = self.balls[x][y]
+                ball.set_dest_drag(y == self.level)
 
 
 class Canvas(Gtk.VBox):
