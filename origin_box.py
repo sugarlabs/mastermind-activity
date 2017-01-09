@@ -53,5 +53,3 @@ class OriginBox(Gtk.Grid):
             self.attach(ball, x, 0, 1, 1)
 
             self.balls.append(ball)
-
-        ball.set_draggable(False)

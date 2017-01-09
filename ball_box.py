@@ -43,7 +43,10 @@ class BallBox(Gtk.EventBox):
         self.ball = None
         self.image = None
 
+        self.__drag_dest_id = None
+
         self.make_image()
+        self.connect("drag-data-get", self.__get_drag_data)
 
     @classmethod
     def new_from_id(self, ballid):
@@ -52,9 +55,11 @@ class BallBox(Gtk.EventBox):
 
         return ball
 
-    def __drag_data_received(self, widget, *args):
-        print args
-        # data.set_text(self.word, -1)
+    def __get_drag_data(self, widget, drag_context, data, info, time):
+        data.set_text(str(self.ball), -1)
+
+    def __drag_data_received(self, drag_cotext, x, y, data, info, time):
+        print "DATA RECEIVED", x, y, data
 
     def set_ball(self, ballid):
         self.ball = ballid
@@ -74,19 +79,24 @@ class BallBox(Gtk.EventBox):
                 self.drag_source_set_icon_pixbuf(make_ball_pixbuf(-1, False))
 
         else:
-            self.drag_source_set(Gdk.ModifierType.BUTTON2_MASK, IGNORE_TARGETS, DRAG_ACTION)
+            self.drag_source_set(Gdk.ModifierType.BUTTON5_MASK, IGNORE_TARGETS, DRAG_ACTION)
 
     def set_dest_drag(self, dest):
         if dest == self.drag_dest:
             return
 
         self.drag_dest = dest
+
+        if self.__drag_dest_id is not None:
+            self.disconnect(self.__drag_dest_id)
+
         if self.drag_dest:
             self.drag_dest_set(Gtk.DestDefaults.ALL, DRAG_TARGETS, DRAG_ACTION)
-            self.connect("drag-data-received", self.__drag_data_received)
 
         else:
             self.drag_dest_set(Gtk.DestDefaults.ALL, IGNORE_TARGETS, DRAG_ACTION)
+
+        self.__drag_dest_id = self.connect("drag-data-received", self.__drag_data_received)
 
     def make_image(self):
         if self.image is not None:
