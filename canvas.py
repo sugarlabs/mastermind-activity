@@ -37,6 +37,9 @@ class GridBalls(Gtk.Grid):
         self.balls = {}
         self.level = None
 
+        self.set_row_spacing(2)
+        self.set_column_spacing(2)
+
         self.show_all()
 
     def clear(self):
@@ -88,17 +91,16 @@ class Canvas(Gtk.VBox):
         hbox = Gtk.HBox()
         self.pack_start(hbox, True, True, 0)
 
-        finishbox = Gtk.VBox()
-        hbox.pack_start(finishbox, True, True, 0)
-
-        centerbox = CenterBox()
-        hbox.pack_start(centerbox, True, True, 0)
+        #finishbox = Gtk.VBox()
+        #hbox.pack_start(finishbox, True, True, 0)
 
         self.grid = GridBalls()
-        centerbox.pack_start(self.grid, True, True, 0)
+        centerbox = CenterBox(self.grid)
+        self.pack_start(centerbox, True, True, 0)
 
         self.originbox = OriginBox()
-        self.pack_end(self.originbox, True, False, 0)
+        centerbox = CenterBox(self.originbox)
+        self.pack_end(centerbox, True, True, 0)
 
         self.reset()
 
