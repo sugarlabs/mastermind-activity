@@ -1,0 +1,6 @@
+[Activity]
+name = Mastermind
+bundle_id = org.laptop.Mastermind
+icon = activity-icon
+exec = sugar-activity activity.Mastermind
+activity_version = 1
