@@ -22,6 +22,8 @@ from utils import get_random_ball
 from utils import make_ball_pixbuf
 from utils import get_ball_image
 
+from constants import BallType
+from constants import BALL_SIZE
 from constants import DRAG_ACTION
 from constants import DRAG_TARGETS
 from constants import IGNORE_TARGETS
@@ -74,9 +76,9 @@ class BallBox(Gtk.EventBox):
             self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, DRAG_TARGETS, DRAG_ACTION)
 
             if self.ball is not None:
-                self.drag_source_set_icon_pixbuf(make_ball_pixbuf(self.ball, False))
+                self.drag_source_set_icon_pixbuf(make_ball_pixbuf(self.ball))
             else:
-                self.drag_source_set_icon_pixbuf(make_ball_pixbuf(-1, False))
+                self.drag_source_set_icon_pixbuf(make_ball_pixbuf(BallType.NULL))
 
         else:
             self.drag_source_set(Gdk.ModifierType.BUTTON5_MASK, IGNORE_TARGETS, DRAG_ACTION)
@@ -105,7 +107,7 @@ class BallBox(Gtk.EventBox):
 
         if self.ball is None:
             self.image = Gtk.Image()
-            self.image.set_size_request(24, 24)
+            self.image.set_size_request(BALL_SIZE, BALL_SIZE)
 
         else:
             self.image = get_ball_image(self.ball)

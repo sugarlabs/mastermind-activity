@@ -22,6 +22,7 @@ import os
 import random
 
 from constants import BallType
+from constants import BALL_SIZE
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -65,18 +66,13 @@ def get_ball_image_path(ballid):
 
 
 
-def make_ball_pixbuf(ballid, small=True):
+def make_ball_pixbuf(ballid):
     path = get_ball_image_path(ballid)
-    if small:
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(path, 24, 24)
-    else:
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(path, 44, 44)
-
-    return pixbuf
+    return GdkPixbuf.Pixbuf.new_from_file_at_size(path, BALL_SIZE, BALL_SIZE)
 
 
-def get_ball_image(ballid, small=True):
-    pixbuf = make_ball_pixbuf(ballid, small)
+def get_ball_image(ballid):
+    pixbuf = make_ball_pixbuf(ballid)
     return Gtk.Image.new_from_pixbuf(pixbuf)
 
 

@@ -29,6 +29,8 @@ DRAG_TARGETS = [Gtk.TargetEntry.new("BALL", 0, 0)]
 IGNORE_TARGETS = []
 DRAG_ACTION = Gdk.DragAction.MOVE
 
+BALL_SIZE = (Gdk.Screen.height() - 200) / 10
+
 
 class BallType:
     NULL    = -1
