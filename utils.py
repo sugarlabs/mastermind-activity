@@ -31,7 +31,10 @@ from gi.repository import GdkPixbuf
 
 
 def get_ball_name(ballid):
-    if ballid == BallType.RED:
+    if ballid == BallType.NULL:
+        return "ball-white"
+
+    elif ballid == BallType.RED:
         return "ball-red"
 
     elif ballid == BallType.GREEN:
@@ -67,7 +70,7 @@ def make_ball_pixbuf(ballid, small=True):
     if small:
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(path, 24, 24)
     else:
-        pixbuf = GdkPixbuf.Pixbuf.new_from_file(path)
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(path, 44, 44)
 
     return pixbuf
 

@@ -66,7 +66,11 @@ class BallBox(Gtk.EventBox):
         self.draggable = draggable
         if self.draggable:
             self.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, DRAG_TARGETS, DRAG_ACTION)
-            self.drag_source_set_icon_pixbuf(make_ball_pixbuf(self.ball, False))
+
+            if self.ball is not None:
+                self.drag_source_set_icon_pixbuf(make_ball_pixbuf(self.ball, False))
+            else:
+                self.drag_source_set_icon_pixbuf(make_ball_pixbuf(-1, False))
 
         else:  # TODO: how I remove this?
             pass
@@ -88,8 +92,8 @@ class BallBox(Gtk.EventBox):
             del self.image
 
         if self.ball is None:
-            self.image = get_ball_image(get_random_ball())# Gtk.Image()
-            #self.image.set_size_request(24, 24)
+            self.image = Gtk.Image()
+            self.image.set_size_request(24, 24)
 
         else:
             self.image = get_ball_image(self.ball)

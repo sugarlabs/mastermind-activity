@@ -30,6 +30,7 @@ DRAG_ACTION = Gdk.DragAction.MOVE
 
 
 class BallType:
+    NULL    = -1
     RED     = 0
     GREEN   = 1
     SKYBLUE = 2
