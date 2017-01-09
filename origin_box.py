@@ -51,7 +51,7 @@ class OriginBox(Gtk.Grid):
         self.clear()
 
         for x in range(0, 8):
-            ball = BallBox.new_from_id(x)
+            ball = BallBox.new_from_id(x, False)
             ball.set_draggable(True)
             self.attach(ball, x, 0, 1, 1)
 

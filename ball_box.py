@@ -37,7 +37,7 @@ from gi.repository import Gdk
 
 class BallBox(Gtk.EventBox):
 
-    def __init__(self):
+    def __init__(self, change_background=True):
         Gtk.EventBox.__init__(self)
 
         self.draggable = False
@@ -47,12 +47,15 @@ class BallBox(Gtk.EventBox):
 
         self.__drag_dest_id = None
 
+        if change_background:
+            self.modify_bg(Gtk.StateType.NORMAL, Gdk.Color(1000, 1000, 1000))
+
         self.make_image()
         self.connect("drag-data-get", self.__get_drag_data)
 
     @classmethod
-    def new_from_id(self, ballid):
-        ball = BallBox()
+    def new_from_id(self, ballid, change_background=True):
+        ball = BallBox(change_background)
         ball.set_ball(ballid)
 
         return ball
