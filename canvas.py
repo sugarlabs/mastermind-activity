@@ -21,6 +21,7 @@
 from ball_box import BallBox
 from origin_box import OriginBox
 from center_box import CenterBox
+from utils import get_random_ball
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -36,7 +37,6 @@ class GridBalls(Gtk.Grid):
         self.balls = {}
         self.level = None
 
-        self.reset()
         self.show_all()
 
     def clear(self):
@@ -83,6 +83,8 @@ class Canvas(Gtk.VBox):
     def __init__(self):
         Gtk.VBox.__init__(self)
 
+        self.level = []
+
         hbox = Gtk.HBox()
         self.pack_start(hbox, True, True, 0)
 
@@ -95,10 +97,31 @@ class Canvas(Gtk.VBox):
         self.grid = GridBalls()
         centerbox.pack_start(self.grid, True, True, 0)
 
-        originbox = OriginBox()
-        self.pack_end(originbox, True, False, 0)
+        self.originbox = OriginBox()
+        self.pack_end(self.originbox, True, False, 0)
+
+        self.reset()
 
         self.show_all()
+
+    def clear(self):
+        del self.level
+        self.level = []
+
+    def make_level(self):
+        for x in range(0, 4):
+            ball = get_random_ball()
+            while ball in self.level:
+                ball = get_random_ball()
+
+            self.level.append(ball)
+
+    def reset(self):
+        self.clear()
+
+        self.make_level()
+        self.grid.reset()
+        self.originbox.reset()
 
 
 if __name__ == "__main__":

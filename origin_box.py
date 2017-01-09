@@ -33,7 +33,6 @@ class OriginBox(Gtk.Grid):
 
         self.balls = []
 
-        self.reset()
         self.show_all()
 
     def clear(self):
