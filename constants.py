@@ -25,7 +25,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 
 
-DRAG_TARGETS = [Gtk.TargetEntry.new("BALL", 0, 0)]
+DRAG_TARGETS = [Gtk.TargetEntry.new("BALL", Gtk.TargetFlags.SAME_APP, 0)]
 IGNORE_TARGETS = []
 DRAG_ACTION = Gdk.DragAction.MOVE
 

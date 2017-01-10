@@ -19,6 +19,7 @@
 # Boston, MA 02111-1307, USA.
 
 from ball_box import BallBox
+from constants import BallType
 from origin_box import OriginBox
 from center_box import CenterBox
 from utils import get_random_ball
@@ -80,6 +81,14 @@ class GridBalls(Gtk.Grid):
                 ball = self.balls[x][y]
                 ball.set_dest_drag(y == self.level)
 
+    def get_level_data(self):
+        level = []
+        for x in range(0, 4):
+            ball = self.balls[x][self.level]
+            level.append(ball.ball)
+
+        return level
+
 
 class Canvas(Gtk.VBox):
 
@@ -97,6 +106,10 @@ class Canvas(Gtk.VBox):
         self.grid = GridBalls()
         centerbox = CenterBox(self.grid)
         self.pack_start(centerbox, True, True, 0)
+
+        button = Gtk.Button("end")
+        button.connect("clicked", lambda widget: self.end_turn())
+        self.pack_end(button, False, False, 0)
 
         self.originbox = OriginBox()
         centerbox = CenterBox(self.originbox)
@@ -124,6 +137,14 @@ class Canvas(Gtk.VBox):
         self.make_level()
         self.grid.reset()
         self.originbox.reset()
+
+    def end_turn(self):
+        data = self.grid.get_level_data()
+        print data
+        if BallType.NULL in data:
+            return
+
+
 
 
 if __name__ == "__main__":

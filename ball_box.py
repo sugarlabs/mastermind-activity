@@ -42,7 +42,7 @@ class BallBox(Gtk.EventBox):
 
         self.draggable = False
         self.drag_dest = False
-        self.ball = None
+        self.ball = BallType.NULL
         self.image = None
 
         self.__drag_dest_id = None
@@ -63,8 +63,15 @@ class BallBox(Gtk.EventBox):
     def __get_drag_data(self, widget, drag_context, data, info, time):
         data.set_text(str(self.ball), -1)
 
-    def __drag_data_received(self, drag_cotext, x, y, data, info, time):
-        print "DATA RECEIVED", x, y, data
+    def __drag_drop_cb(self, widget, drag_context, x, y, time):
+        ball = Gtk.drag_get_source_widget(drag_context)
+        self.set_ball(ball.ball)
+        self.set_draggable(self.ball != BallType.NULL)
+        self.set_dest_drag(self.ball == BallType.NULL)
+
+        ball.set_ball(BallType.NULL)
+        ball.set_draggable(False)
+        ball.set_dest_drag(True)
 
     def set_ball(self, ballid):
         self.ball = ballid
@@ -101,14 +108,14 @@ class BallBox(Gtk.EventBox):
         else:
             self.drag_dest_set(Gtk.DestDefaults.ALL, IGNORE_TARGETS, DRAG_ACTION)
 
-        self.__drag_dest_id = self.connect("drag-data-received", self.__drag_data_received)
+        self.__drag_dest_id = self.connect("drag-drop", self.__drag_drop_cb)
 
     def make_image(self):
         if self.image is not None:
             self.remove(self.image)
             del self.image
 
-        if self.ball is None:
+        if self.ball == BallType.NULL:
             self.image = Gtk.Image()
             self.image.set_size_request(BALL_SIZE, BALL_SIZE)
 
