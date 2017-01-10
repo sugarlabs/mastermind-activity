@@ -1,7 +1,6 @@
-# ArrayActivity
+# Mastermind Activity
 
-Hello Google Code-In Students
-The next activity can calculate distinct exercises of array
+[Mastermind](https://en.wikipedia.org/wiki/Mastermind_(board_game)) game for sugar.
 
-
-Thanks for contributing to open source
+## Screenshot
+![Screenshot](https://s27.postimg.org/jmf2ameab/Captura_de_pantalla_de_2017_01_10_02_38_20.png "Screenshot")
