@@ -18,12 +18,14 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
+from gettext import gettext as _
 from canvas import Canvas
 
 import gi
 gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gtk
+from gi.repository import Pango
 
 from sugar3.graphics.toolbutton import ToolButton
 from sugar3.graphics.toolbarbox import ToolbarBox
@@ -39,6 +41,9 @@ class Mastermind(activity.Activity):
         activity.Activity.__init__(self, handle)
 
         self.canvas = Canvas()
+        self.canvas.connect("data-changed", self._data_changed_cb)
+        self.canvas.connect("win", self._win_cb)
+        self.canvas.connect("lose", self._lose_cb)
         self.set_canvas(self.canvas)
 
         self.make_toolbar()
@@ -53,29 +58,58 @@ class Mastermind(activity.Activity):
             return separator
 
         toolbarbox = ToolbarBox()
-        toolbarbox.toolbar.insert(ActivityToolbarButton(self), -1)
-
-        toolbarbox.toolbar.insert(make_separator(True), -1)
-
-        stop_button = StopButton(self)
-        toolbarbox.toolbar.insert(stop_button, -1)
-
-        toolbarbox.toolbar.show_all()
         self.set_toolbar_box(toolbarbox)
 
-    def _on_add_row(self, widget):
-        self.canvas.add_row()
-        self.update_label_size()
-        self.label_sum.set_label("")
+        toolbar = toolbarbox.toolbar
+        toolbar.insert(ActivityToolbarButton(self), -1)
+        toolbar.insert(make_separator(False), -1)
 
-    def _on_add_column(self, widget):
-        self.canvas.add_column()
-        self.update_label_size()
-        self.label_sum.set_label("")
+        self.play_button = ToolButton(icon_name="media-playback-start")
+        self.play_button.set_tooltip(_("Play"))
+        self.play_button.set_sensitive(False)
+        self.play_button.connect("clicked", self._play_cb)
+        toolbar.insert(self.play_button, -1)
 
-    def _on_sum(self, widget):
-        self.label_sum.set_label(str(sum(self.canvas.get_simple_value_list())))
+        self.ok_button = ToolButton(icon_name="dialog-ok")
+        self.ok_button.set_tooltip(_("Ok"))
+        self.ok_button.set_sensitive(False)
+        self.ok_button.connect("clicked", self._ok_cb)
+        toolbar.insert(self.ok_button, -1)
 
-    def update_label_size(self):
-        size = tuple(self.canvas.get_size())
-        self.label_size.set_label("Width: %d\nHeight: %d" % size)
+        item = Gtk.ToolItem()
+        toolbar.insert(item, -1)
+
+        self.label = Gtk.Label()
+        self.label.modify_font(Pango.FontDescription("Bold"))
+        item.add(self.label)
+
+        toolbar.insert(make_separator(True), -1)
+
+        stop_button = StopButton(self)
+        toolbar.insert(stop_button, -1)
+
+        toolbar.show_all()
+
+    def _ok_cb(self, button):
+        self.canvas.end_turn()
+
+    def _play_cb(self, button):
+        self.canvas.reset()
+        self.label.set_text("")
+        self.play_button.set_sensitive(False)
+
+    def _data_changed_cb(self, canvas, data):
+        self.play_button.set_sensitive(False)
+        self.ok_button.set_sensitive(not -1 in data)
+
+    def _win_cb(self, canvas):
+        self.play_button.set_sensitive(True)
+        self.ok_button.set_sensitive(False)
+
+        self.label.set_text("You win")
+
+    def _lose_cb(self, canvas):
+        self.play_button.set_sensitive(True)
+        self.ok_button.set_sensitive(False)
+
+        self.label.set_text("You lost")

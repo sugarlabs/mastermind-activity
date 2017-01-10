@@ -23,6 +23,8 @@ import random
 
 from constants import BallType
 from constants import BALL_SIZE
+from constants import LOCAL_DIR
+from constants import ResultBallType
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -60,10 +62,25 @@ def get_ball_name(ballid):
         return "ball-yellow"
 
 
+def get_result_ball_name(ballid):
+    if ballid == ResultBallType.NULL:
+        return "ball-white"
+
+    elif ballid == ResultBallType.WHITE:
+        return "ball-correct1"
+
+    elif ballid == ResultBallType.BLACK:
+        return "ball-correct2"
+
+
 def get_ball_image_path(ballid):
     name = get_ball_name(ballid)
-    return os.path.join(os.path.dirname(os.path.realpath(__file__)), "icons", name + ".svg")
+    return os.path.join(LOCAL_DIR, "icons", name + ".svg")
 
+
+def get_result_ball_image_path(ballid):
+    name = get_result_ball_name(ballid)
+    return os.path.join(LOCAL_DIR, "icons", name + ".svg")
 
 
 def make_ball_pixbuf(ballid):
@@ -74,6 +91,10 @@ def make_ball_pixbuf(ballid):
 def get_ball_image(ballid):
     pixbuf = make_ball_pixbuf(ballid)
     return Gtk.Image.new_from_pixbuf(pixbuf)
+
+
+def get_result_ball_image(ballid):
+    return Gtk.Image.new_from_file(get_result_ball_image_path(ballid))
 
 
 def get_random_ball():

@@ -24,14 +24,20 @@ import gi
 gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gtk
+from gi.repository import GObject
 
 
 class OriginBox(Gtk.Grid):
+
+    __gsignals__ = {
+        "data-changed": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, []),
+    }
 
     def __init__(self):
         Gtk.Grid.__init__(self)
 
         self.balls = []
+        self.callback_ids = {}
 
         self.set_margin_top(10)
         self.set_margin_bottom(10)
@@ -41,7 +47,7 @@ class OriginBox(Gtk.Grid):
 
     def clear(self):
         while self.balls != []:
-            ball = balls[0]
+            ball = self.balls[0]
             self.remove(ball)
             self.balls.remove(ball)
 
@@ -50,9 +56,28 @@ class OriginBox(Gtk.Grid):
     def reset(self):
         self.clear()
 
+        for idx in self.callback_ids:
+            ball = self.callback_ids[idx]
+            ball.disconnect(idx)
+
+        del self.callback_ids
+        self.callback_ids = {}
+
         for x in range(0, 8):
             ball = BallBox.new_from_id(x, False)
             ball.set_draggable(True)
             self.attach(ball, x, 0, 1, 1)
 
+            idx = ball.connect("id-changed", self._id_changed_cb)
+            self.callback_ids[idx] = ball
+
             self.balls.append(ball)
+
+        self.show_all()
+
+    def game_over(self):
+        for ball in self.balls:
+            ball.set_draggable(False)
+
+    def _id_changed_cb(self, ball):
+        self.emit("data-changed")

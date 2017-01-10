@@ -18,79 +18,26 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-from ball_box import BallBox
 from constants import BallType
 from origin_box import OriginBox
 from center_box import CenterBox
+from grid_balls import GridBalls
 from utils import get_random_ball
 
 import gi
 gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gtk
-
-
-class GridBalls(Gtk.Grid):
-
-    def __init__(self):
-        Gtk.Grid.__init__(self)
-
-        self.balls = {}
-        self.level = None
-
-        self.set_row_spacing(2)
-        self.set_column_spacing(2)
-
-        self.show_all()
-
-    def clear(self):
-        del self.balls
-        self.balls = {}
-        self.level = 0
-
-        for x in range(0, 4):
-            self.balls[x] = [None] * 10
-
-    def reset(self):
-        self.clear()
-
-        x = -1
-        y = 0
-
-        for i in range(0, 40):
-            x += 1
-
-            if x >= 4:
-                x = 0
-                y += 1
-
-            box = BallBox()
-            self.attach(box, x, y, 1, 1)
-
-            self.balls[x][9 - y] = box
-
-        self.set_drag_level()
-        self.show_all()
-
-    def set_ball(self, x, y, ballid):
-        self.balls[x][y].set_ball(ballid)
-
-    def set_drag_level(self):
-        for x in range(0, 4):
-            for y in range(0, 9):
-                ball = self.balls[x][y]
-                ball.set_dest_drag(y == self.level)
-
-    def get_level_data(self):
-        level = []
-        for x in range(0, 4):
-            ball = self.balls[x][self.level]
-            level.append(ball.ball)
-
-        return level
+from gi.repository import GObject
 
 
 class Canvas(Gtk.VBox):
+
+    __gsignals__ = {
+        "data-changed": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, [GObject.TYPE_PYOBJECT]),
+        "win": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, []),
+        "lose": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, []),
+    }
 
     def __init__(self):
         Gtk.VBox.__init__(self)
@@ -100,18 +47,15 @@ class Canvas(Gtk.VBox):
         hbox = Gtk.HBox()
         self.pack_start(hbox, True, True, 0)
 
-        #finishbox = Gtk.VBox()
-        #hbox.pack_start(finishbox, True, True, 0)
-
         self.grid = GridBalls()
+        self.grid.connect("data-changed", self._data_changed_cb)
+
         centerbox = CenterBox(self.grid)
         self.pack_start(centerbox, True, True, 0)
 
-        button = Gtk.Button("end")
-        button.connect("clicked", lambda widget: self.end_turn())
-        self.pack_end(button, False, False, 0)
-
         self.originbox = OriginBox()
+        self.originbox.connect("data-changed", self._data_changed_cb)
+
         centerbox = CenterBox(self.originbox)
         self.pack_end(centerbox, True, True, 0)
 
@@ -140,11 +84,25 @@ class Canvas(Gtk.VBox):
 
     def end_turn(self):
         data = self.grid.get_level_data()
-        print data
+
         if BallType.NULL in data:
             return
 
+        self.grid.set_data(self.level, data)
+        self.originbox.reset()
 
+        if self.level == data:
+            self.emit("win")
+            self.grid.game_over()
+            self.originbox.game_over()
+
+        elif self.level != data and self.grid.level == 10:
+            self.emit("lose")
+            self.grid.game_over()
+            self.originbox.game_over()
+
+    def _data_changed_cb(self, widget):
+        self.emit("data-changed", self.grid.get_level_data())
 
 
 if __name__ == "__main__":

@@ -18,7 +18,9 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
-import os
+from center_box import CenterBox
+from constants import ResultBallType
+from ball_box import ResultBallBox
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -27,28 +29,35 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 
 
-LOCAL_DIR = os.path.dirname(os.path.realpath(__file__))
+class ResultBox(CenterBox):
 
-DRAG_TARGETS = [Gtk.TargetEntry.new("BALL", Gtk.TargetFlags.SAME_APP, 0)]
-IGNORE_TARGETS = []
-DRAG_ACTION = Gdk.DragAction.MOVE
+    def __init__(self):
+        CenterBox.__init__(self)
 
-BALL_SIZE = (Gdk.Screen.height() - 200) / 10
+        self.set_border_width(2)
 
+        self.grid = Gtk.Grid()
+        self.grid.set_size_request(16 * 4, 1)
+        self.set_center_child(self.grid)
 
-class BallType:
-    NULL    = -1
-    RED     = 0
-    GREEN   = 1
-    SKYBLUE = 2
-    BROWN   = 3
-    PURPLE  = 4
-    PINK    = 5
-    BLUE    = 6
-    YELLOW  = 7
+        self.show_all()
 
+    def set_data(self, correct, user):
+        balls = []
 
-class ResultBallType:
-    NULL  = -1
-    WHITE = 1
-    BLACK = 2
+        for x in range(0, len(correct)):
+            if correct[x] == user[x]:
+                balls.append(ResultBallType.WHITE)
+
+        for x in range(0, len(correct)):
+            if correct[x] in user and correct[x] != user[x]:
+                balls.append(ResultBallType.BLACK)
+
+        x = 0
+        for ballid in balls:
+            box = ResultBallBox.new_from_id(ballid)
+            self.grid.attach(box, x, 0, 1, 1)
+
+            x += 1
+
+        self.show_all()

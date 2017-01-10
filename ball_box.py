@@ -18,24 +18,31 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
+from utils import get_ball_image
 from utils import get_random_ball
 from utils import make_ball_pixbuf
-from utils import get_ball_image
+from utils import get_result_ball_image
 
 from constants import BallType
 from constants import BALL_SIZE
 from constants import DRAG_ACTION
 from constants import DRAG_TARGETS
 from constants import IGNORE_TARGETS
+from constants import ResultBallType
 
 import gi
 gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gtk
 from gi.repository import Gdk
+from gi.repository import GObject
 
 
 class BallBox(Gtk.EventBox):
+
+    __gsignals__ = {
+        "id-changed": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, [])
+    }
 
     def __init__(self, change_background=True):
         Gtk.EventBox.__init__(self)
@@ -72,6 +79,8 @@ class BallBox(Gtk.EventBox):
         ball.set_ball(BallType.NULL)
         ball.set_draggable(False)
         ball.set_dest_drag(True)
+
+        self.emit("id-changed")
 
     def set_ball(self, ballid):
         self.ball = ballid
@@ -121,6 +130,34 @@ class BallBox(Gtk.EventBox):
 
         else:
             self.image = get_ball_image(self.ball)
+
+        self.add(self.image)
+        self.image.show()
+
+
+class ResultBallBox(BallBox):
+
+    def __init__(self):
+        BallBox.__init__(self, False)
+
+    @classmethod
+    def new_from_id(self, ballid):
+        ball = ResultBallBox()
+        ball.set_ball(ballid)
+
+        return ball
+
+    def make_image(self):
+        if self.image is not None:
+            self.remove(self.image)
+            del self.image
+
+        if self.ball == ResultBallType.NULL:
+            self.image = Gtk.Image()
+            self.image.set_size_request(16, 16)
+
+        else:
+            self.image = get_result_ball_image(self.ball)
 
         self.add(self.image)
         self.image.show()
