@@ -26,13 +26,13 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.8"
-     inkscape:cx="52.426407"
-     inkscape:cy="42.344104"
+     inkscape:cx="-16.502164"
+     inkscape:cy="41.629818"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1366"
-     inkscape:window-height="694"
+     inkscape:window-height="706"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1" />
@@ -54,7 +54,7 @@
      id="layer1"
      transform="translate(0,-275)">
     <circle
-       style="fill:#ffb4b4;fill-opacity:1;fill-rule:evenodd;stroke:#dc9b9b;stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:#ffb4b4;fill-opacity:1;fill-rule:evenodd;stroke:#ff8282;stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path3680"
        cx="11"
        cy="286"
