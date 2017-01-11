@@ -63,5 +63,9 @@ class OriginBox(Gtk.Grid):
         for ball in self.balls:
             ball.set_draggable(False)
 
+    def reset(self):
+        for ball in self.balls:
+            ball.set_draggable(True)
+
     def _id_changed_cb(self, ball):
         self.emit("data-changed")
