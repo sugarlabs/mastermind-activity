@@ -18,6 +18,7 @@
 # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
 
+import dbus
 from gettext import gettext as _
 
 from canvas import Canvas
@@ -49,6 +50,7 @@ class Mastermind(activity.Activity):
         self.set_canvas(self.canvas)
 
         self.make_toolbar()
+        self.read_file()
 
         self.show_all()
 
@@ -90,6 +92,31 @@ class Mastermind(activity.Activity):
         toolbar.insert(stop_button, -1)
 
         toolbar.show_all()
+
+    def read_file(self):
+        if "level" in self.metadata.keys():
+            data = {
+                "level": int(self.metadata["level"]),
+                "correct": [int(x) for x in eval(self.metadata["correct"])],
+                "balls": {}
+            }
+
+            balls = eval(self.metadata["balls"])
+            for key in balls:
+                x = int(key)
+                data["balls"][x] = []
+
+                for value in balls[key]:
+                    y = int(value)
+                    data["balls"][x].append(y)
+
+            self.canvas.set_game_data(data)
+
+    def write_file(self, path):
+        data = self.canvas.get_game_data()
+        self.metadata["level"] = data["level"]
+        self.metadata["correct"] = data["correct"]
+        self.metadata["balls"] = data["balls"]
 
     def _ok_cb(self, button):
         self.canvas.end_turn()

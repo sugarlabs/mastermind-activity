@@ -100,6 +100,16 @@ class Canvas(Gtk.VBox):
             self.grid.game_over()
             self.originbox.game_over()
 
+    def get_game_data(self):
+        data = self.grid.get_all_data()
+        data["correct"] = self.level
+
+        return data
+
+    def set_game_data(self, data):
+        self.level = data["correct"]
+        self.grid.set_all_data(data)
+
     def _data_changed_cb(self, widget):
         self.emit("data-changed", self.grid.get_level_data())
 

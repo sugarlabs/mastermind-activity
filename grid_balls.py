@@ -51,7 +51,9 @@ class GridBalls(Gtk.Grid):
     def clear(self):
         for x in self.balls.keys():
             for ball in self.balls[x]:
-                self.remove(ball)
+                if ball is not None:
+                    self.remove(ball)
+
                 del ball
 
         for box in self.result_boxes:
@@ -128,6 +130,48 @@ class GridBalls(Gtk.Grid):
     def set_data(self, level, user):
         self.result_boxes[self.level].set_data(level, user)
         self.next_level()
+
+    def get_all_data(self):
+        data = {
+            "level": self.level,
+            "balls": {}
+        }
+
+        for x in range(0, 4):
+            data["balls"][x] = []
+            for y in range(0, 10):
+                data["balls"][x].append(self.balls[x][y].ball)
+
+        return data
+
+    def set_all_data(self, data):
+        self.clear()
+
+        self.level = data["level"]
+
+        for x in range(0, 4):
+            for y in range(0, 10):
+                ballid = data["balls"][x][y]
+                ball = BallBox()
+                ball.set_ball(ballid)
+                self.attach(ball, x, 9 - y, 1, 1)
+                self.balls[x][y] = ball
+
+        self.set_drag_level()
+
+        for i in range(0, 10):
+            box = ResultBox()
+            self.attach(box, 4, 9 - i, 1, 1)
+            self.result_boxes.append(box)
+
+            if i < self.level:
+                user = []
+                for x in range(0, 4):
+                    user.append(data["balls"][x][i])
+
+                box.set_data(data["correct"], user)
+
+        self.show_all()
 
     def clear_callbacks(self, unset=False):
         for idx in self.callbacks_ids.keys():
