@@ -80,6 +80,7 @@ class Canvas(Gtk.VBox):
 
         self.make_level()
         self.grid.reset()
+        self.emit("data-changed", [BallType.NULL] * 4)
 
     def end_turn(self):
         data = self.grid.get_level_data()

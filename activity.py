@@ -19,7 +19,9 @@
 # Boston, MA 02111-1307, USA.
 
 from gettext import gettext as _
+
 from canvas import Canvas
+from constants import BallType
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -64,11 +66,10 @@ class Mastermind(activity.Activity):
         toolbar.insert(ActivityToolbarButton(self), -1)
         toolbar.insert(make_separator(False), -1)
 
-        self.play_button = ToolButton(icon_name="media-playback-start")
-        self.play_button.set_tooltip(_("Play"))
-        self.play_button.set_sensitive(False)
-        self.play_button.connect("clicked", self._play_cb)
-        toolbar.insert(self.play_button, -1)
+        self.restart_button = ToolButton(icon_name="system-restart")
+        self.restart_button.set_tooltip(_("Restart"))
+        self.restart_button.connect("clicked", self._restart_cb)
+        toolbar.insert(self.restart_button, -1)
 
         self.ok_button = ToolButton(icon_name="dialog-ok")
         self.ok_button.set_tooltip(_("Ok"))
@@ -93,23 +94,19 @@ class Mastermind(activity.Activity):
     def _ok_cb(self, button):
         self.canvas.end_turn()
 
-    def _play_cb(self, button):
+    def _restart_cb(self, button):
         self.canvas.reset()
         self.label.set_text("")
-        self.play_button.set_sensitive(False)
 
     def _data_changed_cb(self, canvas, data):
-        self.play_button.set_sensitive(False)
-        self.ok_button.set_sensitive(not -1 in data)
+        self.ok_button.set_sensitive(not BallType.NULL in data)
 
     def _win_cb(self, canvas):
-        self.play_button.set_sensitive(True)
         self.ok_button.set_sensitive(False)
 
         self.label.set_text("You win")
 
     def _lose_cb(self, canvas):
-        self.play_button.set_sensitive(True)
         self.ok_button.set_sensitive(False)
 
         self.label.set_text("You lost")
