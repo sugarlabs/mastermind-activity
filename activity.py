@@ -23,6 +23,7 @@ from gettext import gettext as _
 
 from canvas import Canvas
 from constants import BallType
+from helpbutton import HelpButton
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -89,6 +90,15 @@ class Mastermind(activity.Activity):
         item.add(self.label)
 
         toolbar.insert(make_separator(True), -1)
+
+        helpbutton = HelpButton()
+        helpbutton.add_section(_("Instructions:"))
+        helpbutton.add_paragraph(_("Place colors to the last played row."), image="instructions1.png")
+        helpbutton.add_paragraph(_("When you complete a row, click on 'Ok button'."), image="instructions2.png")
+        helpbutton.add_paragraph(_("Next to the row will appear black and white circles."), image="instructions3.png")
+        helpbutton.add_paragraph(_("A black circle means you matched a peg and you placed it correctly."))
+        helpbutton.add_paragraph(_("A white circle means you matched a peg and you wrong placed it."))
+        toolbar.insert(helpbutton, -1)
 
         stop_button = StopButton(self)
         toolbar.insert(stop_button, -1)
