@@ -110,6 +110,11 @@ class Mastermind(activity.Activity):
                     y = int(value)
                     data["balls"][x].append(y)
 
+            current = []
+            for x in range(0, 4):
+                current.append(data["balls"][x][data["level"]])
+
+            self.ok_button.set_sensitive(not BallType.NULL in current)
             self.canvas.set_game_data(data)
 
     def write_file(self, path):

@@ -85,7 +85,10 @@ class BallBox(Gtk.EventBox):
             ball.set_draggable(False)
             ball.set_dest_drag(True)
 
-        if not self.eraser:
+        if self.eraser and not ball.origin:
+            ball.emit("id-changed")
+
+        elif not self.eraser:
             self.emit("id-changed")
 
     def set_ball(self, ballid):
