@@ -19,6 +19,7 @@
 # Boston, MA 02111-1307, USA.
 
 from ball_box import BallBox
+from ball_box import EraserBallBox
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -43,10 +44,13 @@ class OriginBox(Gtk.Grid):
         self.set_margin_bottom(10)
         self.set_column_spacing(5)
 
+        self.eraser_ball = EraserBallBox()
+        self.attach(self.eraser_ball, 0, 0, 1, 1)
+
         for x in range(0, 8):
             ball = BallBox.new_from_id(x, False, True)
             ball.set_draggable(True)
-            self.attach(ball, x, 0, 1, 1)
+            self.attach(ball, x + 1, 0, 1, 1)
 
             idx = ball.connect("id-changed", self._id_changed_cb)
             self.callback_ids[idx] = ball

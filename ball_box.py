@@ -21,6 +21,7 @@
 from utils import get_ball_image
 from utils import get_random_ball
 from utils import make_ball_pixbuf
+from utils import get_eraser_image
 from utils import get_result_ball_image
 
 from constants import BallType
@@ -48,6 +49,7 @@ class BallBox(Gtk.EventBox):
         Gtk.EventBox.__init__(self)
 
         self.origin = origin
+        self.eraser = False
         self.draggable = False
         self.drag_dest = False
         self.ball = BallType.NULL
@@ -73,16 +75,18 @@ class BallBox(Gtk.EventBox):
 
     def __drag_drop_cb(self, widget, drag_context, x, y, time):
         ball = Gtk.drag_get_source_widget(drag_context)
-        self.set_ball(ball.ball)
-        self.set_draggable(self.ball != BallType.NULL)
-        self.set_dest_drag(self.ball == BallType.NULL)
+        if not self.eraser:
+            self.set_ball(ball.ball)
+            self.set_draggable(self.ball != BallType.NULL)
+            self.set_dest_drag(self.ball == BallType.NULL)
 
         if not ball.origin:
             ball.set_ball(BallType.NULL)
             ball.set_draggable(False)
             ball.set_dest_drag(True)
 
-        self.emit("id-changed")
+        if not self.eraser:
+            self.emit("id-changed")
 
     def set_ball(self, ballid):
         self.ball = ballid
@@ -161,5 +165,23 @@ class ResultBallBox(BallBox):
         else:
             self.image = get_result_ball_image(self.ball)
 
+        self.add(self.image)
+        self.image.show()
+
+
+class EraserBallBox(BallBox):
+
+    def __init__(self):
+        BallBox.__init__(self, True, True)
+
+        self.eraser = True
+        self.set_dest_drag(True)
+
+    def make_image(self):
+        if self.image is not None:
+            self.remove(self.image)
+            del self.image
+
+        self.image = get_eraser_image()
         self.add(self.image)
         self.image.show()

@@ -99,3 +99,9 @@ def get_result_ball_image(ballid):
 
 def get_random_ball():
     return random.choice([BallType.RED, BallType.GREEN, BallType.SKYBLUE, BallType.BROWN, BallType.PURPLE, BallType.PINK, BallType.BLUE, BallType.YELLOW])
+
+
+def get_eraser_image():
+    path = os.path.join(LOCAL_DIR, "icons/eraser.svg")
+    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(path, BALL_SIZE, BALL_SIZE)
+    return Gtk.Image.new_from_pixbuf(pixbuf)
