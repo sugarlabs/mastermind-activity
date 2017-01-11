@@ -98,6 +98,7 @@ class Mastermind(activity.Activity):
         helpbutton.add_paragraph(_("Next to the row will appear black and white circles."), image="instructions3.png")
         helpbutton.add_paragraph(_("A black circle means you matched a peg and you placed it correctly."))
         helpbutton.add_paragraph(_("A white circle means you matched a peg and you wrong placed it."))
+        helpbutton.add_paragraph(_("The goal is match all pegs in the correct place."))
         toolbar.insert(helpbutton, -1)
 
         stop_button = StopButton(self)
