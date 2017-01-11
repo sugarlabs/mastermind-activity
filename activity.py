@@ -70,12 +70,14 @@ class Mastermind(activity.Activity):
 
         self.restart_button = ToolButton(icon_name="system-restart")
         self.restart_button.set_tooltip(_("Restart"))
+        self.restart_button.props.accelerator = '<Ctrl>N'
         self.restart_button.connect("clicked", self._restart_cb)
         toolbar.insert(self.restart_button, -1)
 
         self.ok_button = ToolButton(icon_name="dialog-ok")
         self.ok_button.set_tooltip(_("Ok"))
         self.ok_button.set_sensitive(False)
+        self.ok_button.props.accelerator = "Return"
         self.ok_button.connect("clicked", self._ok_cb)
         toolbar.insert(self.ok_button, -1)
 
