@@ -47,11 +47,11 @@ class ResultBox(CenterBox):
 
         for x in range(0, len(correct)):
             if correct[x] == user[x]:
-                balls.append(ResultBallType.WHITE)
+                balls.append(ResultBallType.BLACK)
 
         for x in range(0, len(correct)):
             if correct[x] in user and correct[x] != user[x]:
-                balls.append(ResultBallType.BLACK)
+                balls.append(ResultBallType.WHITE)
 
         x = 0
         for ballid in balls:
