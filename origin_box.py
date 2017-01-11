@@ -43,28 +43,8 @@ class OriginBox(Gtk.Grid):
         self.set_margin_bottom(10)
         self.set_column_spacing(5)
 
-        self.show_all()
-
-    def clear(self):
-        while self.balls != []:
-            ball = self.balls[0]
-            self.remove(ball)
-            self.balls.remove(ball)
-
-            del ball
-
-    def reset(self):
-        self.clear()
-
-        for idx in self.callback_ids:
-            ball = self.callback_ids[idx]
-            ball.disconnect(idx)
-
-        del self.callback_ids
-        self.callback_ids = {}
-
         for x in range(0, 8):
-            ball = BallBox.new_from_id(x, False)
+            ball = BallBox.new_from_id(x, False, True)
             ball.set_draggable(True)
             self.attach(ball, x, 0, 1, 1)
 

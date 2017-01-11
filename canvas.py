@@ -80,7 +80,6 @@ class Canvas(Gtk.VBox):
 
         self.make_level()
         self.grid.reset()
-        self.originbox.reset()
 
     def end_turn(self):
         data = self.grid.get_level_data()
@@ -89,7 +88,6 @@ class Canvas(Gtk.VBox):
             return
 
         self.grid.set_data(self.level, data)
-        self.originbox.reset()
 
         if self.level == data:
             self.emit("win")

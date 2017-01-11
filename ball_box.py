@@ -44,9 +44,10 @@ class BallBox(Gtk.EventBox):
         "id-changed": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, [])
     }
 
-    def __init__(self, change_background=True):
+    def __init__(self, change_background=True, origin=False):
         Gtk.EventBox.__init__(self)
 
+        self.origin = origin
         self.draggable = False
         self.drag_dest = False
         self.ball = BallType.NULL
@@ -61,8 +62,8 @@ class BallBox(Gtk.EventBox):
         self.connect("drag-data-get", self.__get_drag_data)
 
     @classmethod
-    def new_from_id(self, ballid, change_background=True):
-        ball = BallBox(change_background)
+    def new_from_id(self, ballid, change_background=True, origin=False):
+        ball = BallBox(change_background, origin)
         ball.set_ball(ballid)
 
         return ball
@@ -76,9 +77,10 @@ class BallBox(Gtk.EventBox):
         self.set_draggable(self.ball != BallType.NULL)
         self.set_dest_drag(self.ball == BallType.NULL)
 
-        ball.set_ball(BallType.NULL)
-        ball.set_draggable(False)
-        ball.set_dest_drag(True)
+        if not ball.origin:
+            ball.set_ball(BallType.NULL)
+            ball.set_draggable(False)
+            ball.set_dest_drag(True)
 
         self.emit("id-changed")
 
