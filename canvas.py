@@ -19,10 +19,12 @@
 # Boston, MA 02111-1307, USA.
 
 from constants import BallType
+from constants import Difficulty
 from origin_box import OriginBox
 from center_box import CenterBox
 from grid_balls import GridBalls
 from utils import get_random_ball
+from utils import get_columns_for_difficulty
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -39,10 +41,11 @@ class Canvas(Gtk.VBox):
         "lose": (GObject.SIGNAL_RUN_LAST, GObject.TYPE_NONE, []),
     }
 
-    def __init__(self):
+    def __init__(self, autostart=True):
         Gtk.VBox.__init__(self)
 
         self.level = []
+        self.difficulty = Difficulty.MEDIUM
 
         hbox = Gtk.HBox()
         self.pack_start(hbox, True, True, 0)
@@ -59,29 +62,29 @@ class Canvas(Gtk.VBox):
         centerbox = CenterBox(self.originbox)
         self.pack_end(centerbox, True, True, 0)
 
-        self.reset()
+        if autostart:
+            self.reset()
 
         self.show_all()
 
-    def clear(self):
+    def make_level(self):
         del self.level
         self.level = []
 
-    def make_level(self):
-        for x in range(0, 4):
-            ball = get_random_ball()
+        for x in range(0, get_columns_for_difficulty(self.difficulty)):
+            ball = get_random_ball(self.difficulty)
             while ball in self.level:
-                ball = get_random_ball()
+                ball = get_random_ball(self.difficulty)
 
             self.level.append(ball)
 
     def reset(self):
-        self.clear()
-
         self.make_level()
-        self.grid.reset()
-        self.originbox.reset()
-        self.emit("data-changed", [BallType.NULL] * 4)
+        self.grid.reset(self.difficulty)
+        self.originbox.reset(self.difficulty)
+
+        balls = [BallType.NULL] * get_columns_for_difficulty(self.difficulty)
+        self.emit("data-changed", balls)
 
     def end_turn(self):
         data = self.grid.get_level_data()
@@ -104,12 +107,25 @@ class Canvas(Gtk.VBox):
     def get_game_data(self):
         data = self.grid.get_all_data()
         data["correct"] = self.level
+        data["difficulty"] = self.difficulty
 
         return data
 
     def set_game_data(self, data):
-        self.level = data["correct"]
+        self.difficulty = data["difficulty"]
+
+        if data["correct"] is not None:
+            self.level = data["correct"]
+
+        else:
+            self.make_level()
+
         self.grid.set_all_data(data)
+        self.originbox.reset(self.difficulty)
+
+    def set_difficulty(self, difficulty):
+        self.difficulty = difficulty
+        self.reset()
 
     def _data_changed_cb(self, widget):
         self.emit("data-changed", self.grid.get_level_data())

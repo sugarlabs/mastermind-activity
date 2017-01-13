@@ -24,6 +24,7 @@ import random
 from constants import BallType
 from constants import BALL_SIZE
 from constants import LOCAL_DIR
+from constants import Difficulty
 from constants import ResultBallType
 
 import gi
@@ -97,11 +98,51 @@ def get_result_ball_image(ballid):
     return Gtk.Image.new_from_file(get_result_ball_image_path(ballid))
 
 
-def get_random_ball():
-    return random.choice([BallType.RED, BallType.GREEN, BallType.SKYBLUE, BallType.BROWN, BallType.PURPLE, BallType.PINK, BallType.BLUE, BallType.YELLOW])
+def get_random_ball(difficulty):
+    colors = [
+        BallType.RED,
+        BallType.GREEN,
+        BallType.SKYBLUE,
+        BallType.BROWN,
+        BallType.PURPLE,
+        BallType.PINK,
+        BallType.BLUE,
+        BallType.YELLOW
+    ]
+
+    colors = colors[:get_colors_for_difficulty(difficulty)]
+    return random.choice(colors)
 
 
 def get_eraser_image():
     path = os.path.join(LOCAL_DIR, "icons/eraser.svg")
     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(path, BALL_SIZE, BALL_SIZE)
     return Gtk.Image.new_from_pixbuf(pixbuf)
+
+
+def get_columns_for_difficulty(difficulty):
+    if difficulty == Difficulty.EASY:
+        return 2
+
+    elif difficulty == Difficulty.MEDIUM:
+        return 3
+
+    elif difficulty == Difficulty.ADVANCED:
+        return 4
+
+    elif difficulty == Difficulty.EXPERT:
+        return 5
+
+
+def get_colors_for_difficulty(difficulty):
+    if difficulty == Difficulty.EASY:
+        return 4
+
+    elif difficulty == Difficulty.MEDIUM:
+        return 6
+
+    elif difficulty == Difficulty.ADVANCED:
+        return 8
+
+    elif difficulty == Difficulty.EXPERT:
+        return 8

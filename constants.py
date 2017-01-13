@@ -52,3 +52,10 @@ class ResultBallType:
     NULL  = -1
     WHITE = 1
     BLACK = 2
+
+
+class Difficulty:
+    EASY     = 0
+    MEDIUM   = 1
+    ADVANCED = 2
+    EXPERT   = 3

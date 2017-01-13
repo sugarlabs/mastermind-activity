@@ -23,7 +23,9 @@ from gettext import gettext as _
 
 from canvas import Canvas
 from constants import BallType
+from constants import Difficulty
 from helpbutton import HelpButton
+from utils import get_columns_for_difficulty
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -44,7 +46,7 @@ class Mastermind(activity.Activity):
     def __init__(self, handle):
         activity.Activity.__init__(self, handle)
 
-        self.canvas = Canvas()
+        self.canvas = Canvas(False)
         self.canvas.connect("data-changed", self._data_changed_cb)
         self.canvas.connect("win", self._win_cb)
         self.canvas.connect("lose", self._lose_cb)
@@ -52,6 +54,11 @@ class Mastermind(activity.Activity):
 
         self.make_toolbar()
         self.read_file()
+
+        self.easy_button.connect("toggled", self._difficulty_changed, Difficulty.EASY)
+        self.medium_button.connect("toggled", self._difficulty_changed, Difficulty.MEDIUM)
+        self.advanced_button.connect("toggled", self._difficulty_changed, Difficulty.ADVANCED)
+        self.expert_button.connect("toggled", self._difficulty_changed, Difficulty.EXPERT)
 
         self.show_all()
 
@@ -82,6 +89,30 @@ class Mastermind(activity.Activity):
         self.ok_button.connect("clicked", self._ok_cb)
         toolbar.insert(self.ok_button, -1)
 
+        toolbar.insert(make_separator(False), -1)
+
+        button = ToolButton(icon_name="emblem-favorite")
+        button.set_tooltip(_("Difficulty"))
+        toolbar.insert(button, -1)
+
+        palette = button.get_palette()
+        palette_box = Gtk.VBox()
+        palette.set_content(palette_box)
+
+        self.easy_button = Gtk.RadioButton(_("Easy"))
+        palette_box.pack_start(self.easy_button, False, False, 0)
+
+        self.medium_button = Gtk.RadioButton(_("Medium"), group=self.easy_button)
+        palette_box.pack_start(self.medium_button, False, False, 0)
+
+        self.advanced_button = Gtk.RadioButton(_("Advanced"), group=self.easy_button)
+        palette_box.pack_start(self.advanced_button, False, False, 0)
+
+        self.expert_button = Gtk.RadioButton(_("Expert"), group=self.easy_button)
+        palette_box.pack_start(self.expert_button, False, False, 0)
+
+        palette_box.show_all()
+
         item = Gtk.ToolItem()
         toolbar.insert(item, -1)
 
@@ -110,6 +141,7 @@ class Mastermind(activity.Activity):
         if "level" in self.metadata.keys():
             data = {
                 "level": int(self.metadata["level"]),
+                "difficulty": int(self.metadata["difficulty"]),
                 "correct": [int(x) for x in eval(self.metadata["correct"])],
                 "balls": {}
             }
@@ -124,15 +156,44 @@ class Mastermind(activity.Activity):
                     data["balls"][x].append(y)
 
             current = []
-            for x in range(0, 4):
+            for x in range(0, get_columns_for_difficulty(data["difficulty"])):
                 current.append(data["balls"][x][data["level"]])
 
             self.ok_button.set_sensitive(not BallType.NULL in current)
-            self.canvas.set_game_data(data)
+
+        else:
+            data = {
+                "level": 0,
+                "difficulty": Difficulty.MEDIUM,
+                "correct": None,
+                "balls": {}
+            }
+
+            columns = get_columns_for_difficulty(data["difficulty"])
+
+            for x in range(0, columns):
+                data["balls"][x] = [BallType.NULL] * 10
+
+            self.ok_button.set_sensitive(False)
+
+        if data["difficulty"] == Difficulty.EASY:
+            self.easy_button.set_active(True)
+
+        elif data["difficulty"] == Difficulty.MEDIUM:
+            self.medium_button.set_active(True)
+
+        elif data["difficulty"] == Difficulty.ADVANCED:
+            self.advanced_button.set_active(True)
+
+        elif data["difficulty"] == Difficulty.EXPERT:
+            self.expert_button.set_active(True)
+
+        self.canvas.set_game_data(data)
 
     def write_file(self, path):
         data = self.canvas.get_game_data()
         self.metadata["level"] = data["level"]
+        self.metadata["difficulty"] = data["difficulty"]
         self.metadata["correct"] = data["correct"]
         self.metadata["balls"] = data["balls"]
 
@@ -148,10 +209,12 @@ class Mastermind(activity.Activity):
 
     def _win_cb(self, canvas):
         self.ok_button.set_sensitive(False)
-
         self.label.set_text("You win")
 
     def _lose_cb(self, canvas):
         self.ok_button.set_sensitive(False)
-
         self.label.set_text("You lost")
+
+    def _difficulty_changed(self, button, difficulty):
+        if button.get_active():
+            self.canvas.set_difficulty(difficulty)

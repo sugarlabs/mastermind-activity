@@ -31,13 +31,14 @@ from gi.repository import Gdk
 
 class ResultBox(CenterBox):
 
-    def __init__(self):
+    def __init__(self, columns=4):
         CenterBox.__init__(self)
 
+        self.columns = columns
         self.set_border_width(2)
 
         self.grid = Gtk.Grid()
-        self.grid.set_size_request(16 * 4, 1)
+        self.grid.set_size_request(16 * columns, 1)
         self.set_center_child(self.grid)
 
         self.show_all()

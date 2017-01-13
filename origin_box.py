@@ -20,6 +20,8 @@
 
 from ball_box import BallBox
 from ball_box import EraserBallBox
+from constants import Difficulty
+from utils import get_colors_for_difficulty
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -39,6 +41,7 @@ class OriginBox(Gtk.Grid):
 
         self.balls = []
         self.callback_ids = {}
+        self.difficulty = None
 
         self.set_margin_top(10)
         self.set_margin_bottom(10)
@@ -47,25 +50,40 @@ class OriginBox(Gtk.Grid):
         self.eraser_ball = EraserBallBox()
         self.attach(self.eraser_ball, 0, 0, 1, 1)
 
-        for x in range(0, 8):
-            ball = BallBox.new_from_id(x, False, True)
-            ball.set_draggable(True)
-            self.attach(ball, x + 1, 0, 1, 1)
-
-            idx = ball.connect("id-changed", self._id_changed_cb)
-            self.callback_ids[idx] = ball
-
-            self.balls.append(ball)
-
         self.show_all()
 
     def game_over(self):
         for ball in self.balls:
             ball.set_draggable(False)
 
-    def reset(self):
-        for ball in self.balls:
-            ball.set_draggable(True)
+    def clear(self):
+        while self.balls != []:
+            ball = self.balls[0]
+            self.balls.remove(ball)
+            self.remove(ball)
+
+            del ball
+
+    def reset(self, difficulty=Difficulty.MEDIUM):
+        if difficulty != self.difficulty:
+            self.difficulty = difficulty
+            self.clear()
+
+            for x in range(0, get_colors_for_difficulty(difficulty)):
+                ball = BallBox.new_from_id(x, False, True)
+                ball.set_draggable(True)
+                self.attach(ball, x + 1, 0, 1, 1)
+
+                idx = ball.connect("id-changed", self._id_changed_cb)
+                self.callback_ids[idx] = ball
+
+                self.balls.append(ball)
+
+            self.show_all()
+
+        else:
+            for ball in self.balls:
+                ball.set_draggable(True)
 
     def _id_changed_cb(self, ball):
         self.emit("data-changed")

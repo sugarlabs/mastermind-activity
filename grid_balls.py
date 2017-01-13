@@ -20,7 +20,9 @@
 
 from ball_box import BallBox
 from constants import BallType
+from constants import Difficulty
 from result_box import ResultBox
+from utils import get_columns_for_difficulty
 
 import gi
 gi.require_version("Gtk", "3.0")
@@ -42,6 +44,7 @@ class GridBalls(Gtk.Grid):
         self.result_boxes = []
         self.callbacks_ids = {}
         self.level = None
+        self.difficulty = Difficulty.MEDIUM
 
         self.set_row_spacing(2)
         self.set_column_spacing(2)
@@ -66,21 +69,27 @@ class GridBalls(Gtk.Grid):
         self.balls = {}
         self.result_boxes = []
         self.level = 0
+
         self.clear_callbacks()
 
-        for x in range(0, 4):
+        for x in range(0, get_columns_for_difficulty(self.difficulty)):
             self.balls[x] = [None] * 10
 
-    def reset(self):
+    def reset(self, difficulty=None):
+        if difficulty is not None:
+            self.difficulty = difficulty
+
         self.clear()
 
         x = -1
         y = 0
 
-        for i in range(0, 40):
+        columns = get_columns_for_difficulty(self.difficulty)
+
+        for i in range(0, columns * 10):
             x += 1
 
-            if x >= 4:
+            if x >= columns:
                 x = 0
                 y += 1
 
@@ -90,8 +99,8 @@ class GridBalls(Gtk.Grid):
             self.balls[x][9 - y] = box
 
         for i in range(0, 10):
-            box = ResultBox()
-            self.attach(box, 4, 9 - i, 1, 1)
+            box = ResultBox(columns)
+            self.attach(box, columns, 9 - i, 1, 1)
             self.result_boxes.append(box)
 
         self.set_drag_level()
@@ -103,7 +112,7 @@ class GridBalls(Gtk.Grid):
     def set_drag_level(self):
         self.clear_callbacks()
 
-        for x in range(0, 4):
+        for x in range(0, get_columns_for_difficulty(self.difficulty)):
             for y in range(0, 10):
                 ball = self.balls[x][y]
                 ball.set_dest_drag(y == self.level)
@@ -116,7 +125,7 @@ class GridBalls(Gtk.Grid):
     def get_level_data(self):
         level = []
         if self.level < 10:
-            for x in range(0, 4):
+            for x in range(0, get_columns_for_difficulty(self.difficulty)):
                 ball = self.balls[x][self.level]
                 level.append(ball.ball)
 
@@ -137,7 +146,7 @@ class GridBalls(Gtk.Grid):
             "balls": {}
         }
 
-        for x in range(0, 4):
+        for x in range(0, get_columns_for_difficulty(self.difficulty)):
             data["balls"][x] = []
             for y in range(0, 10):
                 data["balls"][x].append(self.balls[x][y].ball)
@@ -145,11 +154,13 @@ class GridBalls(Gtk.Grid):
         return data
 
     def set_all_data(self, data):
+        self.difficulty = data["difficulty"]
         self.clear()
 
         self.level = data["level"]
+        columns = get_columns_for_difficulty(self.difficulty)
 
-        for x in range(0, 4):
+        for x in range(0, columns):
             for y in range(0, 10):
                 ballid = data["balls"][x][y]
                 ball = BallBox()
@@ -161,12 +172,12 @@ class GridBalls(Gtk.Grid):
 
         for i in range(0, 10):
             box = ResultBox()
-            self.attach(box, 4, 9 - i, 1, 1)
+            self.attach(box, columns, 9 - i, 1, 1)
             self.result_boxes.append(box)
 
             if i < self.level:
                 user = []
-                for x in range(0, 4):
+                for x in range(0, columns):
                     user.append(data["balls"][x][i])
 
                 box.set_data(data["correct"], user)
