@@ -138,7 +138,7 @@ class Mastermind(activity.Activity):
         toolbar.show_all()
 
     def read_file(self):
-        if "level" in self.metadata.keys():
+        if "level" in list(self.metadata.keys()):
             data = {
                 "level": int(self.metadata["level"]),
                 "difficulty": int(self.metadata["difficulty"]),
