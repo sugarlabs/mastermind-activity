@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2017, Cristian García <cristian99garcia@gmail.com>
@@ -49,7 +49,7 @@ class GridBalls(Gtk.Grid):
         self.show_all()
 
     def clear(self):
-        for x in self.balls.keys():
+        for x in list(self.balls.keys()):
             for ball in self.balls[x]:
                 if ball is not None:
                     self.remove(ball)
@@ -174,7 +174,7 @@ class GridBalls(Gtk.Grid):
         self.show_all()
 
     def clear_callbacks(self, unset=False):
-        for idx in self.callbacks_ids.keys():
+        for idx in list(self.callbacks_ids.keys()):
             ball = self.callbacks_ids[idx]
             ball.disconnect(idx)
 

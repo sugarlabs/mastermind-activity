@@ -2,5 +2,5 @@
 name = Mastermind
 bundle_id = org.laptop.Mastermind
 icon = icon
-exec = sugar-activity activity.Mastermind
+exec = sugar-activity3 activity.Mastermind
 activity_version = 1

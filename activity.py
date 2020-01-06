@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2017, Cristian García <cristian99garcia@gmail.com>
@@ -107,7 +107,7 @@ class Mastermind(activity.Activity):
         toolbar.show_all()
 
     def read_file(self):
-        if "level" in self.metadata.keys():
+        if "level" in list(self.metadata.keys()):
             data = {
                 "level": int(self.metadata["level"]),
                 "correct": [int(x) for x in eval(self.metadata["correct"])],
