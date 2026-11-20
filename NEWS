@@ -1,0 +1,5 @@
+Unreleased
+==========
+
+* Restore completed games from the Journal without indexing past the board.
+* Preserve difficulty and finished-game controls when resuming.

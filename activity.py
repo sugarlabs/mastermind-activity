@@ -139,14 +139,22 @@ class Mastermind(activity.Activity):
 
     def read_file(self):
         if "level" in list(self.metadata.keys()):
+            balls = eval(self.metadata["balls"])
+            saved_difficulty = self.metadata.get("difficulty")
+            if saved_difficulty is None:
+                saved_difficulty = {
+                    2: Difficulty.EASY,
+                    3: Difficulty.MEDIUM,
+                    4: Difficulty.ADVANCED,
+                    5: Difficulty.EXPERT,
+                }.get(len(balls), Difficulty.MEDIUM)
             data = {
                 "level": int(self.metadata["level"]),
-                "difficulty": int(self.metadata["difficulty"]),
+                "difficulty": int(saved_difficulty),
                 "correct": [int(x) for x in eval(self.metadata["correct"])],
                 "balls": {}
             }
 
-            balls = eval(self.metadata["balls"])
             for key in balls:
                 x = int(key)
                 data["balls"][x] = []
@@ -155,11 +163,13 @@ class Mastermind(activity.Activity):
                     y = int(value)
                     data["balls"][x].append(y)
 
-            current = []
-            for x in range(0, get_columns_for_difficulty(data["difficulty"])):
-                current.append(data["balls"][x][data["level"]])
-
-            self.ok_button.set_sensitive(not BallType.NULL in current)
+            self.ok_button.set_sensitive(False)
+            if data["level"] < len(data["balls"][0]):
+                current = []
+                columns = get_columns_for_difficulty(data["difficulty"])
+                for x in range(columns):
+                    current.append(data["balls"][x][data["level"]])
+                self.ok_button.set_sensitive(not BallType.NULL in current)
 
         else:
             data = {
@@ -193,6 +203,7 @@ class Mastermind(activity.Activity):
     def write_file(self, path):
         data = self.canvas.get_game_data()
         self.metadata["level"] = str(data["level"]).encode('utf-8')
+        self.metadata["difficulty"] = str(data["difficulty"]).encode('utf-8')
         self.metadata["correct"] = str(data["correct"]).encode('utf-8')
         self.metadata["balls"] = str(data["balls"]).encode('utf-8')
 
