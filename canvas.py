@@ -93,7 +93,9 @@ class Canvas(Gtk.VBox):
             return
 
         self.grid.set_data(self.level, data)
+        self._check_game_over(data)
 
+    def _check_game_over(self, data):
         if self.level == data:
             self.emit("win")
             self.grid.game_over()
@@ -122,6 +124,11 @@ class Canvas(Gtk.VBox):
 
         self.grid.set_all_data(data)
         self.originbox.reset(self.difficulty)
+        if data["level"] > 0:
+            columns = get_columns_for_difficulty(self.difficulty)
+            last_turn = [data["balls"][x][data["level"] - 1]
+                         for x in range(columns)]
+            self._check_game_over(last_turn)
 
     def set_difficulty(self, difficulty):
         self.difficulty = difficulty
